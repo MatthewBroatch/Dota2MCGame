@@ -32,7 +32,8 @@ require( "utility_functions" ) -- require utility_functions first since some of 
 require( "events" )
 require( "rpg_example_spawning" )
 require( "worlditem_spawning" )
-require( "game_start_skip_hero_selection" )
+require( "load_modifiers" )
+require( "libraries/modifiers/modifier_strength_increase" )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Precache files and folders
@@ -41,7 +42,7 @@ function Precache( context )
     GameRules.rpg_example = CRPGExample()
     GameRules.rpg_example:PrecacheSpawners( context )
     GameRules.rpg_example:PrecacheItemSpawners( context )
-
+	PrecacheUnitByNameSync("npc_dota_hero_lina", context)
 	PrecacheResource( "particle", "particles/addons_gameplay/player_deferred_light.vpcf", context )
 	PrecacheResource( "particle", "particles/hw_fx/hw_rosh_fireball_fire_launch.vpcf", context )
 
@@ -60,6 +61,8 @@ function Activate()
 		-- example Function call: GameRules.rpg_example:Function()
 		-- example Var access: GameRules.rpg_example.m_Variable = 1
     GameRules.rpg_example:InitGameMode()
+		GameRules.AddonTemplate = CRPGExample()
+    GameRules.AddonTemplate:InitGameMode()
 end
 
 --------------------------------------------------------------------------------
@@ -73,22 +76,29 @@ function CRPGExample:InitGameMode()
 	self._GameMode:SetUnseenFogOfWarEnabled( true )
 	self._GameMode:SetFixedRespawnTime( 4 )
 	
+	GameRules:SetStrategyTime( 0 )
+	GameRules:SetHeroSelectionTime( 0.0 )
 	GameRules:SetGoldPerTick( 0 )
 	GameRules:SetPreGameTime( 0 )
 	GameRules:SetCustomGameSetupTimeout( 0 ) -- skip the custom team UI with 0, or do indefinite duration with -1
 	GameRules:SetCustomGameSetupAutoLaunchDelay( 0 )
 	GameRules:SetCustomGameAccountRecordSaveFunction( Dynamic_Wrap( CRPGExample, "OnSaveAccountRecord" ), self )
+	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 
 	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( CRPGExample, 'OnGameRulesStateChange' ), self )
 	ListenToGameEvent( "npc_spawned", Dynamic_Wrap( CRPGExample, "OnNPCSpawned" ), self )
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( CRPGExample, "OnEntityKilled" ), self )
 	ListenToGameEvent( "dota_player_gained_level", Dynamic_Wrap( CRPGExample, "OnPlayerGainedLevel" ), self )
 	ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( CRPGExample, "OnItemPickedUp" ), self )
+	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
 	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
+
+	LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
 
 	self._tPlayerHeroInitStatus = {}	
 	self._tPlayerDeservesTPAtSpawn = {}	
 	self._tPlayerIDToAccountRecord = {}
+
 
 	for nPlayerID = 0, DOTA_MAX_PLAYERS do
 		self._tPlayerHeroInitStatus[ nPlayerID ] = false
@@ -97,7 +107,7 @@ function CRPGExample:InitGameMode()
 
 	self:SetupSpawners()
 	self:SetupItemSpawners()
-
+	-- self:LoadModifiers()
 	self._GameMode:SetContextThink( "CRPGExample:GameThink", function() return self:GameThink() end, 0 )
 end
 
@@ -143,8 +153,41 @@ function CRPGExample:Think_PlayItemLandSound()
 end
 
 ---------------------------------------------------------------------------
+-- Pick hero
+---------------------------------------------------------------------------
+function CRPGExample:OnThink()
+    -- Reconnect heroes
+    for _,hero in pairs( Entities:FindAllByClassname( "npc_dota_hero_lina")) do
+        if hero:GetPlayerOwnerID() == -1 then
+            local id = hero:GetPlayerOwner():GetPlayerID()
+            if id ~= -1 then
+                print("Reconnecting hero for player " .. id)
+                hero:SetControllableByPlayer(id, true)
+                hero:SetPlayerID(id)
+            end
+        end
+    end
+
+    -- (Rest of your code)
+
+end
+
+function CRPGExample:OnPlayerConnectFull(keys)
+    local player = PlayerInstanceFromIndex(keys.index + 1)
+    -- print("Creating hero.")
+    -- local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+end
+
+---------------------------------------------------------------------------
 -- Increase Hero Stat
 ---------------------------------------------------------------------------
-function IncreaseHeroStat()
-	print( "WE DID IT" )
+function IncreaseHeroStat( _, keys )
+	local npc = EntIndexToHScript( keys.hero )
+	
+	if npc:HasModifier("modifier_strength_increase") == false then
+    npc:AddNewModifier( npc, npc, "modifier_strength_increase", { duration = nil })
+		npc:SetModifierStackCount("modifier_strength_increase", npc, 1)
+	else
+    npc:SetModifierStackCount("modifier_strength_increase", npc, (npc:GetModifierStackCount("modifier_strength_increase", npc) + 1))
+	end
 end

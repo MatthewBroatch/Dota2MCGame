@@ -39,7 +39,7 @@ function CRPGExample:OnNPCSpawned( event )
 
 	if hSpawnedUnit:IsOwnedByAnyPlayer() and hSpawnedUnit:IsRealHero() then
 		local hPlayerHero = hSpawnedUnit
-		self._GameMode:SetContextThink( "self:Think_InitializePlayerHero( hPlayerHero )", function() return self:Think_InitializePlayerHero( hPlayerHero ) end, 0 )
+		-- self._GameMode:SetContextThink( "self:Think_InitializePlayerHero( hPlayerHero )", function() return self:Think_InitializePlayerHero( hPlayerHero ) end, 0 )
 	end
 end
 
