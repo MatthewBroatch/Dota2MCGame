@@ -84,6 +84,7 @@ function CRPGExample:InitGameMode()
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( CRPGExample, "OnEntityKilled" ), self )
 	ListenToGameEvent( "dota_player_gained_level", Dynamic_Wrap( CRPGExample, "OnPlayerGainedLevel" ), self )
 	ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( CRPGExample, "OnItemPickedUp" ), self )
+	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
 
 	self._tPlayerHeroInitStatus = {}	
 	self._tPlayerDeservesTPAtSpawn = {}	
@@ -139,4 +140,11 @@ end
 
 function CRPGExample:Think_PlayItemLandSound()
 	EmitGlobalSound( "ui.inv_drop_highvalue" )
+end
+
+---------------------------------------------------------------------------
+-- Increase Hero Stat
+---------------------------------------------------------------------------
+function IncreaseHeroStat()
+	print( "WE DID IT" )
 end
