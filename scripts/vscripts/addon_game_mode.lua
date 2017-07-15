@@ -92,6 +92,7 @@ function CRPGExample:InitGameMode()
 	ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( CRPGExample, "OnItemPickedUp" ), self )
 	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
 	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
+	CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
 
 	-- LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
 
@@ -198,5 +199,30 @@ function IncreaseHeroStat( _, keys )
 			npc:SetBaseIntellect(npc:GetBaseIntellect() + 1)
 		end
 		npc:CalculateStatBonus()
+		local data = {}
+		data["unit"] = keys.hero;
+		data["player"] = npc:GetPlayerOwnerID();
+		GetUnitStats(nil, data)
 	end
 end
+
+---------------------------------------------------------------------------
+-- Get Unit Stats
+---------------------------------------------------------------------------
+function GetUnitStats( _, keys )
+	if(IsServer()) then
+		local npc = EntIndexToHScript( keys.unit )
+		local stats = {}
+		if(npc:IsHero()) then
+			stats["str"] = npc:GetBaseStrength()
+			stats["agi"] = npc:GetBaseAgility()
+			stats["int"] = npc:GetBaseIntellect()
+		else 
+			stats["str"] = "-"
+			stats["agi"] = "-"
+			stats["int"] = "-"
+		end
+		CustomGameEventManager:Send_ServerToPlayer( PlayerResource:GetPlayer(keys.player), "send_player_stats", stats )
+	end
+end
+
