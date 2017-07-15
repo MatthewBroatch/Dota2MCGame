@@ -177,7 +177,7 @@ end
 function CRPGExample:OnPlayerConnectFull(keys)
     local player = PlayerInstanceFromIndex(keys.index + 1)
     print("Creating hero.")
-    local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+    -- local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
 end
 
 ---------------------------------------------------------------------------
@@ -214,13 +214,12 @@ function GetUnitStats( _, keys )
 		local npc = EntIndexToHScript( keys.unit )
 		local stats = {}
 		if(npc:IsHero()) then
-			stats["str"] = npc:GetBaseStrength()
-			stats["agi"] = npc:GetBaseAgility()
-			stats["int"] = npc:GetBaseIntellect()
-		else 
-			stats["str"] = "-"
-			stats["agi"] = "-"
-			stats["int"] = "-"
+			stats["baseStr"] = npc:GetBaseStrength()
+			stats["baseAgi"] = npc:GetBaseAgility()
+			stats["baseInt"] = npc:GetBaseIntellect()
+			stats["str"] = npc:GetStrength()
+			stats["agi"] = npc:GetAgility()
+			stats["int"] = npc:GetIntellect()
 		end
 		CustomGameEventManager:Send_ServerToPlayer( PlayerResource:GetPlayer(keys.player), "send_player_stats", stats )
 	end
