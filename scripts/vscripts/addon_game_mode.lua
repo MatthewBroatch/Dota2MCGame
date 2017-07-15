@@ -33,7 +33,7 @@ require( "events" )
 require( "rpg_example_spawning" )
 require( "worlditem_spawning" )
 require( "load_modifiers" )
-require( "libraries/modifiers/modifier_strength_increase" )
+-- require( "libraries/modifiers/modifier_strength_increase" )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Precache files and folders
@@ -93,7 +93,9 @@ function CRPGExample:InitGameMode()
 	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
 	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
 
-	LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
+	-- LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
+
+	self:LoadModifiers()
 
 	self._tPlayerHeroInitStatus = {}	
 	self._tPlayerDeservesTPAtSpawn = {}	
@@ -107,7 +109,6 @@ function CRPGExample:InitGameMode()
 
 	self:SetupSpawners()
 	self:SetupItemSpawners()
-	-- self:LoadModifiers()
 	self._GameMode:SetContextThink( "CRPGExample:GameThink", function() return self:GameThink() end, 0 )
 end
 
@@ -174,8 +175,8 @@ end
 
 function CRPGExample:OnPlayerConnectFull(keys)
     local player = PlayerInstanceFromIndex(keys.index + 1)
-    -- print("Creating hero.")
-    -- local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+    print("Creating hero.")
+    local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
 end
 
 ---------------------------------------------------------------------------

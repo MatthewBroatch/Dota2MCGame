@@ -18,9 +18,9 @@ function CRPGExample:OnGameRulesStateChange()
 
 	elseif nNewState == DOTA_GAMERULES_STATE_HERO_SELECTION then
 		print( "OnGameRulesStateChange: Hero Selection" )
-		self:InitializeBuildingOwnership()
-		self:SpawnCreatures()
-		self:SpawnItems()
+		-- self:InitializeBuildingOwnership()
+		-- self:SpawnCreatures()
+		-- self:SpawnItems()
 
 	elseif nNewState == DOTA_GAMERULES_STATE_PRE_GAME then
 		print( "OnGameRulesStateChange: Pre Game" )
