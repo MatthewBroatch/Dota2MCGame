@@ -183,12 +183,20 @@ end
 -- Increase Hero Stat
 ---------------------------------------------------------------------------
 function IncreaseHeroStat( _, keys )
-	local npc = EntIndexToHScript( keys.hero )
-	
-	if npc:HasModifier("modifier_strength_increase") == false then
-    npc:AddNewModifier( npc, npc, "modifier_strength_increase", { duration = nil })
-		npc:SetModifierStackCount("modifier_strength_increase", npc, 1)
-	else
-    npc:SetModifierStackCount("modifier_strength_increase", npc, (npc:GetModifierStackCount("modifier_strength_increase", npc) + 1))
+	if(IsServer()) then
+		local npc = EntIndexToHScript( keys.hero )
+		print("Increase stat: ");
+		print(keys.stat);
+		npc:SetAbilityPoints(npc:GetAbilityPoints() - 1)
+		if(keys.stat == "str") then
+			npc:SetBaseStrength(npc:GetBaseStrength() + 1)
+		end
+		if(keys.stat == "agi") then
+			npc:SetBaseAgility(npc:GetBaseAgility() + 1)
+		end 
+		if(keys.stat == "int") then
+			npc:SetBaseIntellect(npc:GetBaseIntellect() + 1)
+		end
+		npc:CalculateStatBonus()
 	end
 end
