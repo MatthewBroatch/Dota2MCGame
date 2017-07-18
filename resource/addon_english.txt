@@ -1,0 +1,27 @@
+﻿﻿"lang"
+{
+	"Language"      "English"
+	"Tokens"
+	{
+		/////////////////
+		// BASE STRINGS
+		////////////////
+
+		/////////////////
+		// UNITS
+		////////////////
+
+
+		/////////////////
+		// ABILITIES
+		////////////////
+
+
+		/////////////////
+    // ITEMS
+    ////////////////
+
+		"DOTA_Tooltip_ability_item_spell_tome_fireball"											"Spell Tome: Fireball"
+		"DOTA_Tooltip_ability_item_spell_tome_fireball_Description"					"This magic tome teaches you the spell Fireball"
+	}
+}

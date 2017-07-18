@@ -1,6 +1,55 @@
 "DOTAAbilities"
 {
 	//=================================================================================================================
+	// Spell Tome - Fireball
+	//=================================================================================================================
+	"item_spell_tome_fireball"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"ID"           "2000"
+		"BaseClass"						"item_datadriven"
+		"AbilityTextureName"			"item_tome_of_knowledge"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO"
+		"Model"							"models/items/omniknight/misc_book_hierophant.vmdl"
+
+		// Item Info
+		//-------------------------------------------------------------------------------------------------------------
+		"ItemCost"							"10"
+		"ItemShopTags"					"Fireball"
+		"ItemQuality"						"consumable"
+		"ItemAliases"						""
+		"ItemPurchasable"				"1"
+		"ItemSellable"					"1"
+		"ItemDroppable" 				"1"
+		"ItemShareability"			"ITEM_FULLY_SHAREABLE"
+		"ItemPermanent" 				"0"
+		"ItemStackable"					"1"
+		"ItemInitialCharges"			"1"
+
+		// Stats		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastPoint"              "0"
+		"AbilityCooldown"				"1"
+		"AbilityManaCost"				"0"
+		"AbilityCastRange"				"100"
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"lua_items/spell_tomes/learn_spell_tome.lua"
+				"Function"				"learn_spell_on_spell_start"
+				"SpellName"  			"juggernaut_blade_fury"
+			}
+			"SpendCharge"
+			{}
+		}
+	}
+
+	//=================================================================================================================
 	// Orb of Passage
 	//=================================================================================================================
 	"item_orb_of_passage"
@@ -14,7 +63,7 @@
 		
 		// Item Info
 		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"0"
+		"ItemCost"						"100"
 		"ItemShopTags"					""
 		"ItemQuality"					"component"
 		"ItemAliases"					""
