@@ -93,6 +93,8 @@ function CRPGExample:InitGameMode()
 	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
 	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
 	CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
+	CustomGameEventManager:RegisterListener('learn_ability', LearnSpell)
+	CustomGameEventManager:RegisterListener('unlearn_ability', UnlearnSpell)
 
 	-- LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
 
@@ -225,3 +227,29 @@ function GetUnitStats( _, keys )
 	end
 end
 
+---------------------------------------------------------------------------
+-- Learn Spell
+---------------------------------------------------------------------------
+function LearnSpell( _, keys )
+  -- Add the ability
+	local npc = EntIndexToHScript( keys.unit )
+	local doesntKnowAbility = npc:FindAbilityByName(keys.abilityName) == nil
+	if doesntKnowAbility then
+		npc:AddAbility(keys.abilityName)
+		-- Get the handle and level it up if possible
+		local ability = npc:FindAbilityByName(keys.abilityName) 
+		if ability then
+			local MaxLevel = ability:GetMaxLevel()
+			ability:SetLevel( MaxLevel )
+		end
+	end
+end
+
+---------------------------------------------------------------------------
+-- UnLearn Spell
+---------------------------------------------------------------------------
+function UnlearnSpell( _, keys )
+  -- Add the ability
+	local npc = EntIndexToHScript( keys.unit )
+  npc:RemoveAbility(keys.abilityName)
+end
