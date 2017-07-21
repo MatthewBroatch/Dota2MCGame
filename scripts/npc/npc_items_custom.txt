@@ -36,186 +36,61 @@
 		"AbilityManaCost"				"0"
 		"AbilityCastRange"				"100"
 
-		"OnSpellStart"
+		"OnEquip"
 		{
 			"RunScript"
 			{
-				"ScriptFile"			"lua_items/spell_tomes/learn_spell_tome.lua"
-				"Function"				"learn_spell_on_spell_start"
-				"SpellName"  			"juggernaut_blade_fury"
+				"ScriptFile"			"lua_items/item_equip.lua"
+				"Function"				"tell_panormana_item_equip"
+				"Slot"  					"other"
+				"Consumable"      "1"
+				"ActiveModifier"  "modifier_item_spell_tome_fireball_learn"
 			}
-			"SpendCharge"
-			{}
 		}
-	}
 
-	//=================================================================================================================
-	// Orb of Passage
-	//=================================================================================================================
-	"item_orb_of_passage"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_branches"
-		"AbilityTextureName"			"item_gem"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
-		"Model"							"models/props_gameplay/gem01.vmdl"
-		
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					""
-		"ItemQuality"					"component"
-		"ItemAliases"					""
-		"ItemPurchasable"				"0"
-		"ItemSellable"					"0"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-
-		// Special	
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
+		"Modifiers"
 		{
-			"01"
+			"modifier_item_spell_tome_fireball_learn"
 			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_all_stats"		"0"
+					"IsHidden"              "1"
+					"Passive"               "0"
+					"Duration"              "1"
+					"OnCreated"
+					{
+						"RunScript"
+						{
+							"ScriptFile"			"lua_items/spell_tomes/learn_spell_tome.lua"
+							"Function"				"learn_spell_on_spell_start"
+							"SpellName"  			"lina_dragon_slave"
+						}
+					}
 			}
 		}
 	}
 
 	//=================================================================================================================
-	// Teleport Scroll
+	// Shortsword
 	//=================================================================================================================
-	"item_teleport"
+	"item_shortsword_rusty"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_tpscroll"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELLED | DOTA_ABILITY_BEHAVIOR_NOASSIST | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK"
-		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
-		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_BUILDING"
-		"AbilityUnitTargetFlags"		"DOTA_UNIT_TARGET_FLAG_INVULNERABLE"
-		"Model"							"models/props_gameplay/tpscroll01.vmdl"
-
-		// Stats
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCastRange"				"0"
-		"AbilityCooldown"				"10.0"
-		"AbilitySharedCooldown"			"teleport"
-		"AbilityChannelTime"			"3.0"
-		"AbilityCastPoint"				"0.0"
-		
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"10"
-		"ItemCost"						"100"
-		"ItemShopTags"					"consumable;tutorial"
-		"ItemQuality"					"consumable"
-		"ItemAliases"					"tp;town portal scroll"
-		"ItemStackable"					"1"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-		"ItemPermanent"					"0"
-		"ItemInitialCharges"			"1"
-		"SideShop"						"1"
-		
-		// Special	
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"minimun_distance"		"70"
-			}
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"maximum_distance"		"575"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"vision_radius"			"200"
-			}
-		}
-	}	
-
-	//=================================================================================================================
-	// Arboreal Refreshment
-	//=================================================================================================================
-	"item_arboreal_refreshment"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_tango"
-		"AbilityTextureName"			"item_tango"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
-		"Model"							"models/props_gameplay/tango.vmdl"
-		"Effect"						"particles/generic_gameplay/dropped_tango.vpcf"
-		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_TREE | DOTA_UNIT_TARGET_CUSTOM"
-		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_CUSTOM"
-
-		// Stats
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCastRange"				"165"
-		"AbilityCastPoint"				"0.0"
-		
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"125"
-		"ItemShopTags"					"consumable"
-		"ItemQuality"					"consumable"
-		"ItemAliases"					"tango"
-		"ItemStackable"					"1"
-		"ItemPermanent"					"0"
-		"ItemInitialCharges"			"3"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-		
-		// Special	
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"total_heal"			"150"
-			}
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"total_heal_ward_tooltip"			"230"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"cast_range_ward"			"450"
-			}
-			"04"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"buff_duration"			"10.0"
-			}
-		}
-	}
-
-	//=================================================================================================================
-	// Broadsword tier1
-	//=================================================================================================================
-	"item_broadsword_tier1"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_broadsword"
+		"ID"           "2001"
+		"BaseClass"								"item_datadriven"
 		"AbilityTextureName"			"item_broadsword"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"AbilityBehavior"					"DOTA_ABILITY_BEHAVIOR_PASSIVE"
 
 		// Item Info
 		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"component"
-		"ItemAliases"					"broadsword"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
+		"ItemCost"							"10"
+		"ItemShopTags"					"Shortsword"
+		"ItemQuality"						"component"
+		"ItemAliases"						""
+		"ItemPurchasable"				"1"
+		"ItemSellable"					"1"
+		"ItemDroppable" 				"1"
+		"ItemShareability"			"ITEM_FULLY_SHAREABLE"
+		"ItemPermanent" 				"1"
 
 		// Special	
 		//-------------------------------------------------------------------------------------------------------------
@@ -224,7 +99,39 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"15"
+				"bonus_damage"			"10"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_strength"		"10"
+			}
+		}
+
+		"OnEquip"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"lua_items/item_equip.lua"
+				"Function"				"tell_panormana_item_equip"
+				"Slot"  					"main-hand"
+				"PassiveModifier" "modifier_item_shortsword_rusty"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_item_shortsword_rusty"
+			{
+					"IsHidden"              "0"
+					"Passive"               "1"
+					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+
+					"Properties"
+					{
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_strength"
+						"MODIFIER_PROPERTY_PREATTACK_BONUSDAMAGE"		"%bonus_damage"
+					}
 			}
 		}
 	}

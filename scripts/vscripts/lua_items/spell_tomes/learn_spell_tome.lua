@@ -1,6 +1,7 @@
 function learn_spell_on_spell_start( event )
-    print( event.caster:GetPlayerOwner() )
-    CustomGameEventManager:Send_ServerToPlayer( event.caster:GetPlayerOwner(), "hero_learns_spell", event )
+    if IsServer() then
+        CustomGameEventManager:Send_ServerToPlayer( event.caster:GetPlayerOwner(), "hero_learns_spell", event )
+    end
 end
 
 -- function learn_spell_on_spell_start( event )

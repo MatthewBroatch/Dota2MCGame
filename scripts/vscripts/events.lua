@@ -18,9 +18,6 @@ function CRPGExample:OnGameRulesStateChange()
 
 	elseif nNewState == DOTA_GAMERULES_STATE_HERO_SELECTION then
 		print( "OnGameRulesStateChange: Hero Selection" )
-		-- self:InitializeBuildingOwnership()
-		-- self:SpawnCreatures()
-		-- self:SpawnItems()
 
 	elseif nNewState == DOTA_GAMERULES_STATE_PRE_GAME then
 		print( "OnGameRulesStateChange: Pre Game" )
@@ -35,12 +32,7 @@ end
 -- GameEvent: OnNPCSpawned
 --------------------------------------------------------------------------------
 function CRPGExample:OnNPCSpawned( event )
-	hSpawnedUnit = EntIndexToHScript( event.entindex )
 
-	if hSpawnedUnit:IsOwnedByAnyPlayer() and hSpawnedUnit:IsRealHero() then
-		local hPlayerHero = hSpawnedUnit
-		-- self._GameMode:SetContextThink( "self:Think_InitializePlayerHero( hPlayerHero )", function() return self:Think_InitializePlayerHero( hPlayerHero ) end, 0 )
-	end
 end
 
 --------------------------------------------------------------------------------
@@ -89,43 +81,6 @@ function CRPGExample:PlayDeathSound( hDeadUnit )
 	elseif hDeadUnit:GetUnitName() == "npc_dota_creature_bear_large" then
 		EmitSoundOn( "BearLarge.Death", hDeadUnit )
 
-	end
-end
-
---------------------------------------------------------------------------------
--- Think_InitializePlayerHero
---------------------------------------------------------------------------------
-function CRPGExample:Think_InitializePlayerHero( hPlayerHero )
-	if not hPlayerHero then
-		return 0.1
-	end
-
-	local nPlayerID = hPlayerHero:GetPlayerID()
-
-	if self._tPlayerHeroInitStatus[ nPlayerID ] == false then
-		hPlayerHero.PlayKillEffect = Juggernaut_PlayKillEffect
-		PlayerResource:SetCameraTarget( nPlayerID, hPlayerHero )
-		PlayerResource:SetOverrideSelectionEntity( nPlayerID, hPlayerHero )
-		PlayerResource:SetGold( nPlayerID, 0, true )
-		PlayerResource:SetGold( nPlayerID, 0, false )
-		hPlayerHero:HeroLevelUp( false )
-		hPlayerHero:UpgradeAbility( hPlayerHero:GetAbilityByIndex( 0 ) )
-		hPlayerHero:UpgradeAbility( hPlayerHero:GetAbilityByIndex( 1 ) )
-		hPlayerHero:SetIdleAcquire( false )
-
-		if self._tPlayerDeservesTPAtSpawn[ nPlayerID ] then
-			print( "Player deserves a TP at spawn: " .. nPlayerID )
-			local hTP = CreateItem( "item_teleport", hPlayerHero, hPlayerHero )
-			hTP:SetPurchaseTime( 0 )
-			hPlayerHero:AddItem( hTP )
-		end
-
-		if GetMapName() == "rpg_example" then
-			local nLightParticleID = ParticleManager:CreateParticle( "particles/addons_gameplay/player_deferred_light.vpcf", PATTACH_ABSORIGIN, hPlayerHero )
-			ParticleManager:SetParticleControlEnt( nLightParticleID, PATTACH_ABSORIGIN, hPlayerHero, PATTACH_ABSORIGIN, "attach_origin", hPlayerHero:GetAbsOrigin(), true )
-		end
-
-		self._tPlayerHeroInitStatus[ nPlayerID ] = true
 	end
 end
 
@@ -185,46 +140,47 @@ function CRPGExample:OnLoadAccountRecord( nPlayerID )
 	end
 end
 
-function CRPGExample:InitializeBuildingOwnership()
-	local hStartBuilding = Entities:FindByName( nil, "checkpoint00_building" )
-	hStartBuilding:SetTeam( nGOOD_TEAM )
-
-	for nPlayerID, tblAccountRecord in pairs( self._tPlayerIDToAccountRecord ) do
-		if tblAccountRecord["checkpoints"] then
-			local tblCheckpoints = string.split( tblAccountRecord["checkpoints"], "," )
-			for k, strCheckpoint in pairs( tblCheckpoints ) do
-				local hBuilding = Entities:FindByName( nil, strCheckpoint .. "_building" )
-				if hBuilding then
-					hBuilding:SetTeam( nGOOD_TEAM )
-
-					print( "Player has non-start checkpoint: " .. nPlayerID )
-					self._tPlayerDeservesTPAtSpawn[ nPlayerID ] = true
-				end
-			end
+---------------------------------------------------------------------------
+-- Increase Hero Stat
+---------------------------------------------------------------------------
+function CRPGExample:IncreaseHeroStat( keys )
+	if(IsServer()) then
+		local npc = EntIndexToHScript( keys.hero )
+		print("Increase stat: ");
+		print(keys.stat);
+		npc:SetAbilityPoints(npc:GetAbilityPoints() - 1)
+		if(keys.stat == "str") then
+			npc:SetBaseStrength(npc:GetBaseStrength() + 1)
 		end
+		if(keys.stat == "agi") then
+			npc:SetBaseAgility(npc:GetBaseAgility() + 1)
+		end 
+		if(keys.stat == "int") then
+			npc:SetBaseIntellect(npc:GetBaseIntellect() + 1)
+		end
+		npc:CalculateStatBonus()
+		local data = {}
+		data["unit"] = keys.hero;
+		data["player"] = npc:GetPlayerOwnerID();
+		self:GetUnitStats(nil, data)
 	end
 end
 
-
-function PlayPACrit( hAttacker, hVictim )
-	local bloodEffect = "particles/units/heroes/hero_phantom_assassin/phantom_assassin_crit_impact.vpcf"
-	local nFXIndex = ParticleManager:CreateParticle( bloodEffect, PATTACH_CUSTOMORIGIN, nil )
-	ParticleManager:SetParticleControlEnt( nFXIndex, 0, hVictim, PATTACH_POINT_FOLLOW, "attach_hitloc", hVictim:GetAbsOrigin(), true )
-	ParticleManager:SetParticleControl( nFXIndex, 1, hVictim:GetAbsOrigin() )
-	local flHPRatio = math.min( 1.0, hVictim:GetMaxHealth() / 200 )
-	ParticleManager:SetParticleControlForward( nFXIndex, 1, RandomFloat( 0.5, 1.0 ) * flHPRatio * ( hAttacker:GetAbsOrigin() - hVictim:GetAbsOrigin() ):Normalized() )
-	ParticleManager:SetParticleControlEnt( nFXIndex, 10, hVictim, PATTACH_ABSORIGIN_FOLLOW, "", hVictim:GetAbsOrigin(), true )
-	ParticleManager:ReleaseParticleIndex( nFXIndex )
-end
-
-function PlayLifeStealerEmerge( hAttacker, hVictim )
-	ParticleManager:ReleaseParticleIndex( ParticleManager:CreateParticle( "particles/units/heroes/hero_life_stealer/life_stealer_infest_emerge_bloody.vpcf", PATTACH_ABSORIGIN_FOLLOW, hVictim ) )
-end
-
-function Juggernaut_PlayKillEffect( self, hVictim )
-	if hVictim:GetMaxHealth() > 150 and RandomFloat( 0, 1 ) > 0.75 then
-		PlayLifeStealerEmerge( self, hVictim )
-	else
-		PlayPACrit( self, hVictim )
+---------------------------------------------------------------------------
+-- Get Unit Stats
+---------------------------------------------------------------------------
+function CRPGExample:GetUnitStats( keys )
+	if(IsServer()) then
+		local npc = EntIndexToHScript( keys.unit )
+		local stats = {}
+		if(npc:IsHero()) then
+			stats["baseStr"] = npc:GetBaseStrength()
+			stats["baseAgi"] = npc:GetBaseAgility()
+			stats["baseInt"] = npc:GetBaseIntellect()
+			stats["str"] = npc:GetStrength()
+			stats["agi"] = npc:GetAgility()
+			stats["int"] = npc:GetIntellect()
+		end
+		CustomGameEventManager:Send_ServerToPlayer( PlayerResource:GetPlayer(keys.player), "send_player_stats", stats )
 	end
 end

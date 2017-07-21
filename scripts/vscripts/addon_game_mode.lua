@@ -60,7 +60,6 @@ function Activate()
 	-- When you don't have access to 'self', use 'GameRules.rpg_example' instead
 		-- example Function call: GameRules.rpg_example:Function()
 		-- example Var access: GameRules.rpg_example.m_Variable = 1
-    GameRules.rpg_example:InitGameMode()
 		GameRules.AddonTemplate = CRPGExample()
     GameRules.AddonTemplate:InitGameMode()
 end
@@ -77,7 +76,7 @@ function CRPGExample:InitGameMode()
 	self._GameMode:SetFixedRespawnTime( 4 )
 	
 	GameRules:SetStrategyTime( 0 )
-	GameRules:SetHeroSelectionTime( 0.0 )
+	GameRules:SetHeroSelectionTime( 30 )
 	GameRules:SetGoldPerTick( 0 )
 	GameRules:SetPreGameTime( 0 )
 	GameRules:SetCustomGameSetupTimeout( 0 ) -- skip the custom team UI with 0, or do indefinite duration with -1
@@ -91,10 +90,15 @@ function CRPGExample:InitGameMode()
 	ListenToGameEvent( "dota_player_gained_level", Dynamic_Wrap( CRPGExample, "OnPlayerGainedLevel" ), self )
 	ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( CRPGExample, "OnItemPickedUp" ), self )
 	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
-	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
-	CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
-	CustomGameEventManager:RegisterListener('learn_ability', LearnSpell)
-	CustomGameEventManager:RegisterListener('unlearn_ability', UnlearnSpell)
+	if IsServer() then
+		CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
+		CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
+		CustomGameEventManager:RegisterListener('learn_ability', LearnSpell)
+		CustomGameEventManager:RegisterListener('unlearn_ability', UnlearnSpell)
+		CustomGameEventManager:RegisterListener('drop_item', DropItem)
+		CustomGameEventManager:RegisterListener('activate_modifier', ActivateModifier)
+		CustomGameEventManager:RegisterListener('remove_modifier', RemoveModifier)
+	end
 
 	-- LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
 
@@ -188,8 +192,6 @@ end
 function IncreaseHeroStat( _, keys )
 	if(IsServer()) then
 		local npc = EntIndexToHScript( keys.hero )
-		print("Increase stat: ");
-		print(keys.stat);
 		npc:SetAbilityPoints(npc:GetAbilityPoints() - 1)
 		if(keys.stat == "str") then
 			npc:SetBaseStrength(npc:GetBaseStrength() + 1)
@@ -231,13 +233,14 @@ end
 -- Learn Spell
 ---------------------------------------------------------------------------
 function LearnSpell( _, keys )
-  -- Add the ability
 	local npc = EntIndexToHScript( keys.unit )
-	local doesntKnowAbility = npc:FindAbilityByName(keys.abilityName) == nil
+	local doesntKnowAbility = npc:FindAbilityByName( keys.abilityName ) == nil
+	print( doesntKnowAbility )
 	if doesntKnowAbility then
-		npc:AddAbility(keys.abilityName)
+		print( keys.abilityName )
+		npc:AddAbility( keys.abilityName )
 		-- Get the handle and level it up if possible
-		local ability = npc:FindAbilityByName(keys.abilityName) 
+		local ability = npc:FindAbilityByName( keys.abilityName ) 
 		if ability then
 			local MaxLevel = ability:GetMaxLevel()
 			ability:SetLevel( MaxLevel )
@@ -249,7 +252,37 @@ end
 -- UnLearn Spell
 ---------------------------------------------------------------------------
 function UnlearnSpell( _, keys )
-  -- Add the ability
 	local npc = EntIndexToHScript( keys.unit )
   npc:RemoveAbility(keys.abilityName)
 end
+
+---------------------------------------------------------------------------
+-- Drop Item
+---------------------------------------------------------------------------
+function DropItem( _, keys )
+	local npc = EntIndexToHScript( keys.unit )
+	local item = CreateItem( keys.itemName, npc, npc )
+	CreateItemOnPositionForLaunch( npc:GetAbsOrigin(), item )
+end
+
+---------------------------------------------------------------------------
+-- Activate Modifier
+---------------------------------------------------------------------------
+function ActivateModifier( _, keys )
+	local npc = EntIndexToHScript( keys.unit )
+	local item = CreateItem( keys.abilityName, npc, npc )
+	if(npc:FindModifierByName( keys.modifierName ) == nil) then
+		item:ApplyDataDrivenModifier( npc, npc, keys.modifierName, nil )
+	end
+end
+
+---------------------------------------------------------------------------
+-- Remove Modifier
+---------------------------------------------------------------------------
+function RemoveModifier( _, keys )
+	local npc = EntIndexToHScript( keys.unit )
+	if(npc:FindModifierByName( keys.modifierName ) ~= nil) then
+		npc:RemoveModifierByName( keys.modifierName )
+	end
+end
+

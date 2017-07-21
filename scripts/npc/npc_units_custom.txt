@@ -37,7 +37,7 @@
 		"BaseClass"					"npc_dota_creature"	// Class of entity of link to.
 		"Model"						"models/heroes/undying/undying_minion.vmdl"	// Model.
 		"SoundSet"					"Zombie"					// Name of sound set.
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
 		"ModelScale"				"1.18"
 		"Level"						"1"
 		
@@ -151,7 +151,7 @@
 		"BaseClass"					"npc_dota_creature"	// Class of entity of link to.
 		"Model"						"models/heroes/undying/undying_minion.vmdl"	// Model.
 		"SoundSet"					"Zombie"					// Name of sound set.
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
 		"ModelScale"				".8"
 		"Level"						"1"
 				
@@ -233,7 +233,7 @@
 		"BaseClass"					"npc_dota_creature"	// Class of entity of link to.
 		"Model"						"models/heroes/undying/undying_minion_torso.vmdl"	// Model.
 		"SoundSet"					"Zombie"					// Name of sound set.
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_zombie.vsndevts"
 		"ModelScale"				".8"
 		"Level"						"1"
 		"CanBeDominated"			"0"
@@ -317,7 +317,7 @@
 		"Model"						"models/heroes/lone_druid/spirit_bear.vmdl"	// Model.
 		"BaseClass"					"npc_dota_creature"
 		"SoundSet"					"LoneDruid_SpiritBear"
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_bear.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_bear.vsndevts"
 		"Level"						"1"
 		"ModelScale" 				".6"
 
@@ -394,7 +394,7 @@
 		"Model"						"models/heroes/lone_druid/spirit_bear.vmdl"	// Model.
 		"BaseClass"					"npc_dota_creature"
 		"SoundSet"					"LoneDruid_SpiritBear"
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_bear.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_bear.vsndevts"
 		"Level"						"1"
 		"ModelScale" 				"0.9"
 
@@ -531,7 +531,7 @@
 		"BoundsHullName"			"DOTA_HULL_SIZE_HERO"
 		"HealthBarOffset"			"140"
 
-		"GameSoundsFile"			"soundevents/game_sounds_heroes/game_sounds_slark.vsndevts"
+		//"GameSoundsFile"			"soundevents/game_sounds_heroes/game_sounds_slark.vsndevts"
 		"VoiceFile" 				"soundevents/voscripts/game_sounds_vo_slark.vsndevts"
 
 		// Creature Data
@@ -670,7 +670,7 @@
 		"MovementTurnRate"			"0.5"		// Turning rate.
 
 		
-		"GameSoundsFile"			"soundevents/game_sounds_heroes/game_sounds_leshrac.vsndevts"
+		//"GameSoundsFile"			"soundevents/game_sounds_heroes/game_sounds_leshrac.vsndevts"
 		"VoiceFile"					"soundevents/voscripts/game_sounds_vo_leshrac.vsndevts"
 
 		// Status
@@ -736,7 +736,7 @@
 		"BaseClass"					"npc_dota_creature"
 		"Model"						"models/heroes/broodmother/broodmother.vmdl"	// Model.
 		"SoundSet"					"Spider"					// Name of sound set.
-		"GameSoundsFile"			"soundevents/creatures/game_sounds_spider.vsndevts"
+		//"GameSoundsFile"			"soundevents/creatures/game_sounds_spider.vsndevts"
 		"ModelScale"				"0.7"								// old 1.0
 		"Level"						"1"
 		//"ConsideredHero"			"0"
@@ -814,7 +814,7 @@
 		//Precache
 		//------------------------------------------------------------------
 		"VoiceFile"				"soundevents/voscripts/game_sounds_vo_broodmother.vsndevts"
-		"GameSoundsFile"		"soundevents/game_sounds_heroes/game_sounds_broodmother.vsndevts"
+		//"GameSoundsFile"		"soundevents/game_sounds_heroes/game_sounds_broodmother.vsndevts"
 
 		"ShouldDoFlyHeightVisual" "0"
 
