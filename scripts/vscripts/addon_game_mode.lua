@@ -1,6 +1,8 @@
---[[ rpg_example game mode ]]
-
-print( "Entering rpg_example's addon_game_mode.lua file." )
+---------------------------------------------------------------------------
+if mastercrafters == nil then
+    _G.mastercrafters = class({})
+end
+---------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 -- Integer constants
@@ -18,36 +20,26 @@ _G.nBOSS_MAX_DIST_FROM_SPAWN = 0
 _G.nCREATURE_RESPAWN_TIME = 60
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
--- RPGExample class
-------------------------------------------------------------------------------------------------------------------------------------------------------
-if CRPGExample == nil then
-	_G.CRPGExample = class({}) -- put CRPGExample in the global scope
-	--refer to: http://stackoverflow.com/questions/6586145/lua-require-with-global-local
-end
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Required .lua files, which just exist to help organize functions contained in our addon.  Make sure to call these beneath the mode's class creation.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-require( "utility_functions" ) -- require utility_functions first since some of the other required files may use its functions
-require( "events" )
-require( "rpg_example_spawning" )
-require( "worlditem_spawning" )
-require( "load_modifiers" )
+-- require( "utility_functions" ) -- require utility_functions first since some of the other required files may use its functions
+-- require( "events" )
+-- require( "rpg_example_spawning" )
+-- require( "worlditem_spawning" )
+require( 'libraries/timers' )
+require( 'libraries/notifications' )
+require( 'libraries/attributes' )
+require( 'libraries/attachments' )
 -- require( "libraries/modifiers/modifier_strength_increase" )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Precache files and folders
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 function Precache( context )
-    GameRules.rpg_example = CRPGExample()
-    GameRules.rpg_example:PrecacheSpawners( context )
-    GameRules.rpg_example:PrecacheItemSpawners( context )
+	GameRules.mastercrafters = mastercrafters()
+	-- GameRules.rpg_example:PrecacheSpawners( context )
+	-- GameRules.rpg_example:PrecacheItemSpawners( context )
 	PrecacheUnitByNameSync("npc_dota_hero_lina", context)
-	PrecacheResource( "particle", "particles/addons_gameplay/player_deferred_light.vpcf", context )
-	PrecacheResource( "particle", "particles/hw_fx/hw_rosh_fireball_fire_launch.vpcf", context )
-
-    PrecacheResource( "particle", "particles/units/heroes/hero_phantom_assassin/phantom_assassin_crit_impact.vpcf", context )
-	PrecacheResource( "particle", "particles/units/heroes/hero_life_stealer/life_stealer_infest_emerge_bloody.vpcf", context )
 
 	PrecacheResource( "soundfile", "soundevents/game_sounds_main.vsndevts", context )
 	PrecacheResource( "soundfile", "soundevents/game_sounds_triggers.vsndevts", context )
@@ -57,113 +49,158 @@ end
 -- Activate RPGExample mode
 --------------------------------------------------------------------------------
 function Activate()
-	-- When you don't have access to 'self', use 'GameRules.rpg_example' instead
-		-- example Function call: GameRules.rpg_example:Function()
-		-- example Var access: GameRules.rpg_example.m_Variable = 1
-		GameRules.AddonTemplate = CRPGExample()
-    GameRules.AddonTemplate:InitGameMode()
+	-- When you don't have access to 'self', use 'GameRules.mastercrafters' instead
+		-- example Function call: GameRules.mastercrafters:Function()
+		-- example Var access: GameRules.mastercrafters.m_Variable = 1
+		GameRules.mastercrafters = mastercrafters()
+    GameRules.mastercrafters:InitGameMode()
 end
+
+XP_PER_LEVEL_TABLE = {
+	0
+}
 
 --------------------------------------------------------------------------------
 -- Init
 --------------------------------------------------------------------------------
-function CRPGExample:InitGameMode()
-	print( "Entering CRPGExample:InitGameMode" )
-	self._GameMode = GameRules:GetGameModeEntity()
-
-	self._GameMode:SetAnnouncerDisabled( true )
-	self._GameMode:SetUnseenFogOfWarEnabled( true )
-	self._GameMode:SetFixedRespawnTime( 4 )
+function mastercrafters:InitGameMode()
+	print( "Entering mastercrafters:InitGameMode" )
 	
+	exp = 0;
+	for i = 1, 500 do
+		exp = exp + (i*100)
+		XP_PER_LEVEL_TABLE[i] = exp
+	end
+
 	GameRules:SetStrategyTime( 0 )
-	GameRules:SetHeroSelectionTime( 30 )
-	GameRules:SetGoldPerTick( 0 )
-	GameRules:SetPreGameTime( 0 )
-	GameRules:SetCustomGameSetupTimeout( 0 ) -- skip the custom team UI with 0, or do indefinite duration with -1
+	GameRules:SetCustomGameSetupTimeout( -1 ) -- skip the custom team UI with 0, or do indefinite duration with -1
 	GameRules:SetCustomGameSetupAutoLaunchDelay( 0 )
-	GameRules:SetCustomGameAccountRecordSaveFunction( Dynamic_Wrap( CRPGExample, "OnSaveAccountRecord" ), self )
+	GameRules:SetHeroRespawnEnabled( true )
+	GameRules:SetUseUniversalShopMode( false )
+	GameRules:SetSameHeroSelectionEnabled( true )
+	GameRules:SetHeroSelectionTime( 0 )
+	GameRules:SetPreGameTime( 1 )
+	GameRules:SetPostGameTime( 9001 )
+	GameRules:SetTreeRegrowTime( 10000.0 )
+	GameRules:SetUseCustomHeroXPValues ( true )
+	GameRules:SetGoldPerTick(0)
+	GameRules:SetUseBaseGoldBountyOnHeroes( false ) -- Need to check legacy values
+	GameRules:SetHeroMinimapIconScale( 1 )
+	GameRules:SetCreepMinimapIconScale( 1 )
+	GameRules:SetRuneMinimapIconScale( 1 )
+	GameRules:SetFirstBloodActive( false )
+	GameRules:SetHideKillMessageHeaders( true )
+	GameRules:EnableCustomGameSetupAutoLaunch( false )
+
+	-- Set game mode rules
+	GameMode = GameRules:GetGameModeEntity()  
+	GameMode:SetUnseenFogOfWarEnabled( true )
+	GameMode:SetFixedRespawnTime( 4 )
+	GameMode:SetRecommendedItemsDisabled( true )
+	GameMode:SetBuybackEnabled( false )
+	GameMode:SetTopBarTeamValuesOverride ( true )
+	GameMode:SetTopBarTeamValuesVisible( true )
+	GameMode:SetTowerBackdoorProtectionEnabled( false )
+	GameMode:SetGoldSoundDisabled( false )
+	GameMode:SetAnnouncerDisabled( true )
+	GameMode:SetLoseGoldOnDeath( false )
+	GameMode:SetUseCustomHeroLevels ( true )
+	GameMode:SetCustomXPRequiredToReachNextLevel( XP_PER_LEVEL_TABLE )
+	GameMode:SetFogOfWarDisabled( false )
+	GameMode:SetStashPurchasingDisabled( true )
+	GameMode:SetMaximumAttackSpeed( 10000 )
+-- GameRules:SetCustomGameAccountRecordSaveFunction( Dynamic_Wrap( mastercrafters, "OnSaveAccountRecord" ), self )
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 
-	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( CRPGExample, 'OnGameRulesStateChange' ), self )
-	ListenToGameEvent( "npc_spawned", Dynamic_Wrap( CRPGExample, "OnNPCSpawned" ), self )
-	ListenToGameEvent( "entity_killed", Dynamic_Wrap( CRPGExample, "OnEntityKilled" ), self )
-	ListenToGameEvent( "dota_player_gained_level", Dynamic_Wrap( CRPGExample, "OnPlayerGainedLevel" ), self )
-	ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( CRPGExample, "OnItemPickedUp" ), self )
-	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( CRPGExample, 'OnPlayerConnectFull' ), self)
-	if IsServer() then
-		CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
-		CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
-		CustomGameEventManager:RegisterListener('learn_ability', LearnSpell)
-		CustomGameEventManager:RegisterListener('unlearn_ability', UnlearnSpell)
-		CustomGameEventManager:RegisterListener('drop_item', DropItem)
-		CustomGameEventManager:RegisterListener('activate_modifier', ActivateModifier)
-		CustomGameEventManager:RegisterListener('remove_modifier', RemoveModifier)
-	end
+	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( mastercrafters, 'OnGameRulesStateChange' ), self )
+	ListenToGameEvent( "npc_spawned", Dynamic_Wrap( mastercrafters, "OnNPCSpawned" ), self )
+	-- ListenToGameEvent( "entity_killed", Dynamic_Wrap( mastercrafters, "OnEntityKilled" ), self )
+	-- ListenToGameEvent( "dota_player_gained_level", Dynamic_Wrap( mastercrafters, "OnPlayerGainedLevel" ), self )
+	-- ListenToGameEvent( "dota_item_picked_up", Dynamic_Wrap( mastercrafters, "OnItemPickedUp" ), self )
+	ListenToGameEvent( 'player_connect_full', Dynamic_Wrap( mastercrafters, 'OnPlayerConnectFull' ), self)
+	CustomGameEventManager:RegisterListener('increase_hero_stat', IncreaseHeroStat)
+	CustomGameEventManager:RegisterListener('get_unit_stats', GetUnitStats)
+	CustomGameEventManager:RegisterListener('learn_ability', LearnSpell)
+	CustomGameEventManager:RegisterListener('unlearn_ability', UnlearnSpell)
+	CustomGameEventManager:RegisterListener('drop_item', DropItem)
+	CustomGameEventManager:RegisterListener('activate_modifier', ActivateModifier)
+	CustomGameEventManager:RegisterListener('remove_modifier', RemoveModifier)
+	-- CustomGameEventManager:RegisterListener('create_hero', CreateHero)
 
-	-- LinkLuaModifier( "modifier_strength_increase", LUA_MODIFIER_MOTION_NONE )
-
-	self:LoadModifiers()
-
-	self._tPlayerHeroInitStatus = {}	
-	self._tPlayerDeservesTPAtSpawn = {}	
-	self._tPlayerIDToAccountRecord = {}
+	-- self._tPlayerHeroInitStatus = {}	
+	-- self._tPlayerDeservesTPAtSpawn = {}	
+	-- self._tPlayerIDToAccountRecord = {}
 
 
-	for nPlayerID = 0, DOTA_MAX_PLAYERS do
-		self._tPlayerHeroInitStatus[ nPlayerID ] = false
-		self._tPlayerDeservesTPAtSpawn[ nPlayerID ] = false
-	end
+	-- for nPlayerID = 0, DOTA_MAX_PLAYERS do
+	-- 	self._tPlayerHeroInitStatus[ nPlayerID ] = false
+	-- 	self._tPlayerDeservesTPAtSpawn[ nPlayerID ] = false
+	-- end
 
-	self:SetupSpawners()
-	self:SetupItemSpawners()
-	self._GameMode:SetContextThink( "CRPGExample:GameThink", function() return self:GameThink() end, 0 )
+	-- self:SetupSpawners()
+	-- self:SetupItemSpawners()
+	-- self._GameMode:SetContextThink( "mastercrafters:GameThink", function() return self:GameThink() end, 0 )
+end
+
+function mastercrafters:OnGameRulesStateChange(keys)
+    local newState = GameRules:State_Get()
+
+    print("[MASTERCRAFTERS] GameRules State Changed: ", newState)
+    -- UI:GameStateManager(newState) -- ui game state manager
+    if newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
+				print( "OnGameRulesStateChange: Custom Game Setup" )
+				GameRules:SetTimeOfDay( 0.25 )
+				SendToServerConsole( "dota_daynightcycle_pause 1" )
+				for nPlayerID = 0, DOTA_MAX_TEAM_PLAYERS do
+					PlayerResource:SetCustomTeamAssignment( nPlayerID, 2 ) -- put each player on Radiant team
+
+					-- self:OnLoadAccountRecord( nPlayerID )
+				end
+    elseif newState == DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP then
+			print("DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP")
+        -- Scores:Init() -- Start score tracking for all players
+    elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
+			print("DOTA_GAMERULES_STATE_PRE_GAME")
+        -- mastercrafters:OnPreGame()  --TODO: Fix staging
+    elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+			print("DOTA_GAMERULES_STATE_GAME_IN_PROGRESS")
+        -- mastercrafters:OnGameInProgress()
+    end
 end
 
 --------------------------------------------------------------------------------
 -- Main Think
 --------------------------------------------------------------------------------
-function CRPGExample:GameThink()
+function mastercrafters:GameThink()
 	local flThinkTick = 0.2
 
 	return flThinkTick
 end
 
----------------------------------------------------------------------------
--- CreateWorldItemOnUnit
----------------------------------------------------------------------------
-function CRPGExample:CreateWorldItemOnUnit( sItemName, unit )
-    local newItem = CreateItem( sItemName, nil, nil )
-	CreateItemOnPositionSync( unit:GetAbsOrigin(), newItem )
-end
 
----------------------------------------------------------------------------
--- CreateWorldItemOnPosition
----------------------------------------------------------------------------
-function CRPGExample:CreateWorldItemOnPosition( sItemName, vPos )
-    local newItem = CreateItem( sItemName, nil, nil )
-	CreateItemOnPositionSync( vPos, newItem )
-	print( "Creating item " .. newItem:GetName() .. " on position: " .. tostring( vPos ) )
-end
+-- An NPC has spawned somewhere in game.  This includes heroes
+function mastercrafters:OnNPCSpawned(keys)
+	local npc = EntIndexToHScript(keys.entindex)
 
----------------------------------------------------------------------------
--- LaunchWorldItemFromUnit
----------------------------------------------------------------------------
-function CRPGExample:LaunchWorldItemFromUnit( sItemName, flLaunchHeight, flDuration, hUnit )
-    local newItem = CreateItem( sItemName, nil, nil )
-    local newWorldItem = CreateItemOnPositionSync( hUnit:GetOrigin(), newItem )
-	newItem:LaunchLoot( false, flLaunchHeight, flDuration, hUnit:GetOrigin() + RandomVector( RandomFloat( 200, 300 ) ) )
-	print( "Launching " .. newItem:GetName() .. " near " .. hUnit:GetUnitName() )
-	self._GameMode:SetContextThink( "CRPGExample:Think_PlayItemLandSound", function() return self:Think_PlayItemLandSound() end, flDuration )
-end
+	if npc:IsHero() then
+		npc.strBonus = 0
+		npc.intBonus = 0
+		npc.agilityBonus = 0
+		npc.attackspeedBonus = 0
+	end
 
-function CRPGExample:Think_PlayItemLandSound()
-	EmitGlobalSound( "ui.inv_drop_highvalue" )
+	if npc:IsRealHero() and npc.bFirstSpawned == nil then
+		npc.bFirstSpawned = true
+		local playerID = npc:GetPlayerID()
+		Attributes:ModifyBonuses(npc)
+		npc:SetGold(100, false)
+	end
 end
 
 ---------------------------------------------------------------------------
 -- Pick hero
 ---------------------------------------------------------------------------
-function CRPGExample:OnThink()
+function mastercrafters:OnThink()
     -- Reconnect heroes
     for _,hero in pairs( Entities:FindAllByClassname( "npc_dota_hero_lina")) do
         if hero:GetPlayerOwnerID() == -1 then
@@ -180,11 +217,17 @@ function CRPGExample:OnThink()
 
 end
 
-function CRPGExample:OnPlayerConnectFull(keys)
+function mastercrafters:OnPlayerConnectFull(keys)
     local player = PlayerInstanceFromIndex(keys.index + 1)
     print("Creating hero.")
-    -- local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+    local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
 end
+
+-- function CreateHero( _, keys )
+--     print("Creating hero.")
+--     local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+-- end
+
 
 ---------------------------------------------------------------------------
 -- Increase Hero Stat
@@ -217,7 +260,7 @@ function GetUnitStats( _, keys )
 	if(IsServer()) then
 		local npc = EntIndexToHScript( keys.unit )
 		local stats = {}
-		if(npc:IsHero()) then
+		if(npc ~= nil and npc:IsHero()) then
 			stats["baseStr"] = npc:GetBaseStrength()
 			stats["baseAgi"] = npc:GetBaseAgility()
 			stats["baseInt"] = npc:GetBaseIntellect()
@@ -261,8 +304,17 @@ end
 ---------------------------------------------------------------------------
 function DropItem( _, keys )
 	local npc = EntIndexToHScript( keys.unit )
-	local item = CreateItem( keys.itemName, npc, npc )
-	CreateItemOnPositionForLaunch( npc:GetAbsOrigin(), item )
+	GameRules.mastercrafters:LaunchWorldItemFromUnit( keys.itemName, 200, 1, npc )
+end
+function mastercrafters:LaunchWorldItemFromUnit( sItemName, flLaunchHeight, flDuration, hUnit )
+	local newItem = CreateItem( sItemName, nil, nil )
+	local newWorldItem = CreateItemOnPositionSync( hUnit:GetOrigin(), newItem )
+	newItem:LaunchLoot( false, flLaunchHeight, flDuration, hUnit:GetOrigin() + RandomVector( RandomFloat( 200, 300 ) ) )
+	print( "Launching " .. newItem:GetName() .. " near " .. hUnit:GetUnitName() )
+	GameRules:GetGameModeEntity():SetContextThink( "mastercrafters:Think_PlayItemLandSound", function() return self:Think_PlayItemLandSound() end, flDuration )
+end
+function mastercrafters:Think_PlayItemLandSound()
+	EmitGlobalSound( "ui.inv_drop_highvalue" )
 end
 
 ---------------------------------------------------------------------------
@@ -285,4 +337,3 @@ function RemoveModifier( _, keys )
 		npc:RemoveModifierByName( keys.modifierName )
 	end
 end
-
