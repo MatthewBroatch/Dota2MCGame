@@ -414,9 +414,10 @@ function Attachments:GetAttachmentDatabase()
   return Attachments.attachDB
 end
 
-function Attachments:GetCurrentAttachment(unit, attachPoint)
+function Attachments:GetCurrentAttachment(unit, attachPoint, propName)
+  print(unit:entindex())
   if not Attachments.currentAttach[unit:entindex()] then return nil end
-  local prop = Attachments.currentAttach[unit:entindex()][attachPoint]
+  local prop = Attachments.currentAttach[unit:entindex()][attachPoint][propName]
   return prop
 end
 
@@ -424,7 +425,6 @@ function Attachments:AttachProp(unit, attachPoint, model, scale, properties)
 
     local unitModel = unit:GetModelName()
     local propModel = model
-
     local db = Attachments.attachDB
     if propModel.GetModelName then propModel = propModel:GetModelName() end
 
@@ -516,6 +516,14 @@ function Attachments:AttachProp(unit, attachPoint, model, scale, properties)
       end
       return .03
     end)
+
+    if(Attachments.currentAttach[unit:entindex()] == nil) then
+      Attachments.currentAttach[unit:entindex()] = {}
+    end
+    if(Attachments.currentAttach[unit:entindex()][attachPoint] == nil) then
+      Attachments.currentAttach[unit:entindex()][attachPoint] = {}
+    end
+    Attachments.currentAttach[unit:entindex()][attachPoint][propModel] = prop
 
     return prop
 end

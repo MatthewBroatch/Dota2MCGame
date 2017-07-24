@@ -1,0 +1,101 @@
+"Attachments"
+{
+	"Particles"
+	{
+		"models/items/drow/monarch_weapon/monarch_weapon.vmdl"
+		{
+			"particles/econ/items/drow/drow_bow_monarch/drow_bowstring_monarch.vpcf"
+			{
+				"2"		"bow_top"
+				"1"		"bow_mid"
+				"0"		"bow_bot"
+			}
+		}
+	}
+	"models/heroes/omniknight/omniknight.vmdl"
+	{
+		"attach_hitloc"
+		{
+			"models/heroes/crystal_maiden/crystal_maiden_cape.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"yaw"		"0"
+				"XPos"		"2"
+				"YPos"		"0"
+				"ZPos"		"-125"
+				"roll"		"0"
+			}
+			"models/heroes/items/hat_test/hat_test.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"yaw"		"0"
+				"XPos"		"-5"
+				"YPos"		"0"
+				"ZPos"		"-110"
+				"roll"		"0"
+			}
+		}
+		"attach_attack2"
+		{
+			"models/props_items/poor_man_shield01.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"yaw"		"0"
+				"XPos"		"30"
+				"YPos"		"40"
+				"ZPos"		"-40"
+				"roll"		"0"
+			}
+			"models/heroes/items/hat_test/hat_test.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"yaw"		"0"
+				"XPos"		"30"
+				"YPos"		"40"
+				"ZPos"		"-40"
+				"roll"		"0"
+			}
+		}
+		"attach_attack1"
+		{
+			"models/items/axe/weapon_heavy_cutter.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"roll"		"0"
+				"yaw"		"90"
+				"YPos"		"115"
+				"ZPos"		"-140"
+				"XPos"		"0"
+			}
+			"models/heroes/juggernaut/jugg_sword.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"-45"
+				"roll"		"90"
+				"ZPos"		"-85"
+				"YPos"		"55"
+				"yaw"		"90"
+				"XPos"		"-60"
+			}
+			"models/props_items/poor_man_shield01.vmdl"
+			{
+				"scale"		"1"
+				"pitch"		"0"
+				"yaw"		"0"
+				"XPos"		"30"
+				"YPos"		"40"
+				"ZPos"		"-40"
+				"roll"		"0"
+			}
+		}
+	}
+	"Animations"
+	{
+		"models/items/furion/dark_staff/dark_staff.vmdl"		"suffer_idle"
+	}
+}

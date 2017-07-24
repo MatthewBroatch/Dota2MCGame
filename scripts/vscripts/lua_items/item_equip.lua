@@ -15,6 +15,8 @@ function tell_panormana_item_equip( event )
     data["Consumable"] = event.Consumable
     data["ActiveModifier"] = event.ActiveModifier
     data["PassiveModifier"] = event.PassiveModifier
+    data["Model"] = event.Model
+    data["Attach"] = event.Attach
     CustomGameEventManager:Send_ServerToPlayer( event.caster:GetPlayerOwner(), "hero_picked_up_item", data )
     event.caster:RemoveItem(event.ability)
   end

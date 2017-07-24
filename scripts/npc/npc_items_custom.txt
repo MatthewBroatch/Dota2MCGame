@@ -163,7 +163,7 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"10"
+				"bonus_damage"			"15"
 			}
 			"02"
 			{
@@ -180,6 +180,8 @@
 				"Function"				"tell_panormana_item_equip"
 				"Slot"  					"main-hand"
 				"PassiveModifier" "modifier_item_shortsword_rusty"
+				"Model"						"models/heroes/juggernaut/jugg_sword.vmdl"
+				"Attach"					"attach_attack1"
 			}
 		}
 
@@ -194,30 +196,35 @@
 					"Properties"
 					{
 						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_strength"
-						"MODIFIER_PROPERTY_PREATTACK_BONUSDAMAGE"		"%bonus_damage"
+						"MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"		"%bonus_damage"
 					}
 			}
 		}
 	}
 
 	//=================================================================================================================
-	// Broadsword tier2
+	// Simple Shield
 	//=================================================================================================================
-	"item_broadsword_tier2"
+	"item_simple_shield"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_broadsword"
-		"AbilityTextureName"			"item_broadsword"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"ID"           "2002"
+		"BaseClass"								"item_datadriven"
+		"AbilityTextureName"			"item_poor_mans_shield"
+		"AbilityBehavior"					"DOTA_ABILITY_BEHAVIOR_PASSIVE"
 
 		// Item Info
 		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"component"
-		"ItemAliases"					"broadsword"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
+		"ItemCost"							"10"
+		"ItemShopTags"					"Shield"
+		"ItemQuality"						"component"
+		"ItemAliases"						""
+		"ItemPurchasable"				"1"
+		"ItemSellable"					"1"
+		"ItemDroppable" 				"1"
+		"ItemShareability"			"ITEM_FULLY_SHAREABLE"
+		"ItemPermanent" 				"1"
 
 		// Special	
 		//-------------------------------------------------------------------------------------------------------------
@@ -226,197 +233,187 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"30"
-			}
-		}
-	}
-
-	//=================================================================================================================
-	// Broadsword tier3
-	//=================================================================================================================
-	"item_broadsword_tier3"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_broadsword"
-		"AbilityTextureName"			"item_broadsword"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
-
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"component"
-		"ItemAliases"					"broadsword"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-
-		// Special	
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"45"
-			}
-		}
-	}
-
-	//=================================================================================================================
-	// Broadsword (epic)
-	//=================================================================================================================
-	"item_broadsword_epic"
-	{
-		"BaseClass"						"item_lua"
-		"ScriptFile"					"lua_items/item_broadsword_epic.lua"
-		"AbilityTextureName"			"item_broadsword"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
-
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"epic"
-		"ItemAliases"					"broadsword"
-		"SideShop"						"1"
-
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"100"
-			}
-		}
-	}
-
-	//=================================================================================================================
-	// Saprophytic Blade
-	//=================================================================================================================
-	"item_saprophytic_blade"
-	{
-		"BaseClass"						"item_lua"
-		"ScriptFile"					"lua_items/item_saprophytic_blade.lua"
-		"AbilityTextureName"			"item_demon_edge"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
-
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"epic"
-		"ItemAliases"					"blade"
-		"ItemPurchasable"				"0"
-		"ItemSellable"					"0"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"100"
-			}
-		}
-	}
-
-	//=================================================================================================================
-	// Ritual Dirk
-	//=================================================================================================================
-	"item_ritual_dirk"
-	{
-		"BaseClass"						"item_lua"
-		"ScriptFile"					"lua_items/item_ritual_dirk.lua"
-		"AbilityTextureName"			"item_diffusal_blade"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
-
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"ItemCost"						"100"
-		"ItemShopTags"					"damage"
-		"ItemQuality"					"epic"
-		"ItemAliases"					"blade"
-		"ItemPurchasable"				"0"
-		"ItemSellable"					"0"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"100"
-			}
-		}
-	}	
-
-	//=================================================================================================================
-	// Staff of the Ruminant
-	//=================================================================================================================
-	"item_staff_of_the_ruminant"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"item_sheepstick"
-		"AbilityTextureName"			"item_sheepstick"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
-		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
-		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
-
-		// Stats
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCastRange"				"800"
-		"AbilityCastPoint"				"0.0"
-
-		// Stats		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"15.0"
-
-		// Item Info
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"100"
-		"ItemCost"						"5675"
-		"ItemShopTags"					"int;regen_mana;agi;hard_to_tag"
-		"ItemQuality"					"rare"
-		"ItemAliases"					"hex;sheepstick;scythe of vyse"
-		"ItemPurchasable"				"0"
-		"ItemSellable"					"0"
-		"ItemShareability"				"ITEM_FULLY_SHAREABLE"
-		
-		// Special	
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_strength"		"10"
+				"bonus_regen"			"1"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_agility"			"10"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_intellect"		"35"
-			}
-			"04"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_mana_regen"		"150"
-			}
-			"05"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"sheep_duration"		"7.0"
-			}
-			"06"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"sheep_movement_speed"	"100"
+				"bonus_stats"		"5"
 			}
 		}
-	}	
+
+		"OnEquip"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"lua_items/item_equip.lua"
+				"Function"				"tell_panormana_item_equip"
+				"Slot"  					"off-hand"
+				"PassiveModifier" "item_simple_shield"
+				"Model"						"models/props_items/poor_man_shield01.vmdl"
+				"Attach"					"attach_attack2"
+			}
+		}
+
+		"Modifiers"
+		{
+			"item_simple_shield"
+			{
+					"IsHidden"              "0"
+					"Passive"               "1"
+					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+
+					"Properties"
+					{
+						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
+					}
+			}
+		}
+	}
+
+	//=================================================================================================================
+	// Top Hat
+	//=================================================================================================================
+	"item_top_hat"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"ID"           "2003"
+		"BaseClass"								"item_datadriven"
+		"AbilityTextureName"			"item_hood_of_defiance"
+		"AbilityBehavior"					"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+
+		// Item Info
+		//-------------------------------------------------------------------------------------------------------------
+		"ItemCost"							"10"
+		"ItemShopTags"					"Head"
+		"ItemQuality"						"component"
+		"ItemAliases"						""
+		"ItemPurchasable"				"1"
+		"ItemSellable"					"1"
+		"ItemDroppable" 				"1"
+		"ItemShareability"			"ITEM_FULLY_SHAREABLE"
+		"ItemPermanent" 				"1"
+
+		// Special	
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_regen"			"1"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_stats"		"5"
+			}
+		}
+
+		"OnEquip"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"lua_items/item_equip.lua"
+				"Function"				"tell_panormana_item_equip"
+				"Slot"  					"head"
+				"PassiveModifier" "modifier_item_top_hat"
+				"Model"						"models/heroes/items/hat_test/hat_test.vmdl"
+				"Attach"					"attach_hitloc"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_item_top_hat"
+			{
+					"IsHidden"              "0"
+					"Passive"               "1"
+					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+
+					"Properties"
+					{
+						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
+					}
+			}
+		}
+	}
+	//=================================================================================================================
+	// Magic Cape
+	//=================================================================================================================
+	"item_magic_cape"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"ID"           "2004"
+		"BaseClass"								"item_datadriven"
+		"AbilityTextureName"			"item_mantle"
+		"AbilityBehavior"					"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+
+		// Item Info
+		//-------------------------------------------------------------------------------------------------------------
+		"ItemCost"							"10"
+		"ItemShopTags"					"Cape"
+		"ItemQuality"						"component"
+		"ItemAliases"						""
+		"ItemPurchasable"				"1"
+		"ItemSellable"					"1"
+		"ItemDroppable" 				"1"
+		"ItemShareability"			"ITEM_FULLY_SHAREABLE"
+		"ItemPermanent" 				"1"
+
+		// Special	
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_regen"			"1"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_stats"		"5"
+			}
+		}
+
+		"OnEquip"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"lua_items/item_equip.lua"
+				"Function"				"tell_panormana_item_equip"
+				"Slot"  					"cape"
+				"PassiveModifier" "modifier_item_magic_cape"
+				"Model"						"models/heroes/crystal_maiden/crystal_maiden_cape.vmdl"
+				"Attach"					"attach_hitloc"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_item_magic_cape"
+			{
+					"IsHidden"              "0"
+					"Passive"               "1"
+					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+
+					"Properties"
+					{
+						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
+					}
+			}
+		}
+	}
 }

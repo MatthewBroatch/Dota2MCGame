@@ -28,6 +28,7 @@ _G.nCREATURE_RESPAWN_TIME = 60
 -- require( "worlditem_spawning" )
 require( 'libraries/timers' )
 require( 'libraries/notifications' )
+require( 'libraries/animations' )
 require( 'libraries/attributes' )
 require( 'libraries/attachments' )
 -- require( "libraries/modifiers/modifier_strength_increase" )
@@ -40,6 +41,7 @@ function Precache( context )
 	-- GameRules.rpg_example:PrecacheSpawners( context )
 	-- GameRules.rpg_example:PrecacheItemSpawners( context )
 	PrecacheUnitByNameSync("npc_dota_hero_lina", context)
+	PrecacheUnitByNameSync("npc_dota_hero_omniknight", context)
 
 	PrecacheResource( "soundfile", "soundevents/game_sounds_main.vsndevts", context )
 	PrecacheResource( "soundfile", "soundevents/game_sounds_triggers.vsndevts", context )
@@ -59,6 +61,8 @@ end
 XP_PER_LEVEL_TABLE = {
 	0
 }
+
+HIDDEN_HEROS = {}
 
 --------------------------------------------------------------------------------
 -- Init
@@ -125,8 +129,9 @@ function mastercrafters:InitGameMode()
 	CustomGameEventManager:RegisterListener('drop_item', DropItem)
 	CustomGameEventManager:RegisterListener('activate_modifier', ActivateModifier)
 	CustomGameEventManager:RegisterListener('remove_modifier', RemoveModifier)
-	-- CustomGameEventManager:RegisterListener('create_hero', CreateHero)
-
+	CustomGameEventManager:RegisterListener('attach_prop', AttachProp)
+	CustomGameEventManager:RegisterListener('remove_prop', RemoveProp)
+	CustomGameEventManager:RegisterListener('create_hero', CreateHero)
 	-- self._tPlayerHeroInitStatus = {}	
 	-- self._tPlayerDeservesTPAtSpawn = {}	
 	-- self._tPlayerIDToAccountRecord = {}
@@ -192,8 +197,19 @@ function mastercrafters:OnNPCSpawned(keys)
 	if npc:IsRealHero() and npc.bFirstSpawned == nil then
 		npc.bFirstSpawned = true
 		local playerID = npc:GetPlayerID()
+		if(HIDDEN_HEROS[playerID] == nil) then
+			HIDDEN_HEROS[playerID] = true;
+			npc:RemoveSelf()
+			return
+		end
+
 		Attributes:ModifyBonuses(npc)
 		npc:SetGold(100, false)
+		for i,child in ipairs(npc:GetChildren()) do
+			if child:GetClassname() == "dota_item_wearable" and child:GetModelName() ~= "models/heroes/omniknight/head.vmdl" then
+				child:RemoveSelf()
+			end
+		end
 	end
 end
 
@@ -202,7 +218,7 @@ end
 ---------------------------------------------------------------------------
 function mastercrafters:OnThink()
     -- Reconnect heroes
-    for _,hero in pairs( Entities:FindAllByClassname( "npc_dota_hero_lina")) do
+    for _,hero in pairs( Entities:FindAllByClassname( "npc_dota_hero_omniknight")) do
         if hero:GetPlayerOwnerID() == -1 then
             local id = hero:GetPlayerOwner():GetPlayerID()
             if id ~= -1 then
@@ -220,13 +236,24 @@ end
 function mastercrafters:OnPlayerConnectFull(keys)
     local player = PlayerInstanceFromIndex(keys.index + 1)
     print("Creating hero.")
-    local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
+    local hero = CreateHeroForPlayer('npc_dota_hero_omniknight', player)
+		-- for i,child in ipairs(hero:GetChildren()) do
+		-- 	if child:GetClassname() == "dota_item_wearable" then
+		-- 		print(child:GetModelName())
+		-- 		child:RemoveSelf()
+		-- 	end
+		-- end
 end
 
--- function CreateHero( _, keys )
---     print("Creating hero.")
---     local hero = CreateHeroForPlayer('npc_dota_hero_lina', player)
--- end
+function CreateHero( _, keys )
+    print("Creating hero.")
+    local player = PlayerInstanceFromIndex(keys.player)
+    -- local hero = CreateHeroForPlayer('npc_dota_hero_omniknight', player)
+		-- local hiddenHero = HIDDEN_HEROS[keys.player]
+		-- local origin = hiddenHero:GetOrigin()
+		-- hero:SetOrigin(origin)
+		-- hiddenHero:RemoveSelf()
+end
 
 
 ---------------------------------------------------------------------------
@@ -335,5 +362,21 @@ function RemoveModifier( _, keys )
 	local npc = EntIndexToHScript( keys.unit )
 	if(npc:FindModifierByName( keys.modifierName ) ~= nil) then
 		npc:RemoveModifierByName( keys.modifierName )
+	end
+end
+
+---------------------------------------------------------------------------
+-- Props
+---------------------------------------------------------------------------
+function AttachProp( _, keys )
+	local npc = EntIndexToHScript( keys.unit )
+	Attachments:AttachProp(npc, keys.attach, keys.model, 1.0)
+end
+
+function RemoveProp( _, keys )
+	local npc = EntIndexToHScript( keys.unit )
+	local prop = Attachments:GetCurrentAttachment(npc, keys.attach, keys.model)
+	if(prop ~= nil) then
+		prop:RemoveSelf() 
 	end
 end

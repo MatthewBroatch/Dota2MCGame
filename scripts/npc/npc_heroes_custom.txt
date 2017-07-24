@@ -3,9 +3,9 @@
 // the specified key-value combinations.  Use override_hero <hero_to_override> for this.
 "DOTAHeroes"
 {
-	"npc_dota_hero_juggernaut"
+	"npc_dota_hero_omniknight"
 	{
-		"override_hero"				"npc_dota_hero_juggernaut"
+		"override_hero"				"npc_dota_hero_omniknight"
 		"Ability1"					""
 		"Ability2"					""
 		"Ability3"					""
@@ -29,31 +29,4 @@
 		"VisionDaytimeRange"		"1200"
 		"VisionNighttimeRange"		"1200"
 	}
-
-	"npc_dota_hero_lina"
-	{
-		"override_hero"				"npc_dota_hero_lina"
-		"Ability1"					""
-		"Ability2"					""
-		"Ability3"					"" 
-		"Ability4"					"" 
-		"AttackDamageMin"			"8"
-		"AttackDamageMax"			"8"
-
-		"AttributePrimary"			"DOTA_ATTRIBUTE_STRENGTH"
-		"AttributeBaseStrength"		"1"
-		"AttributeStrengthGain"		"0"
-		"AttributeBaseIntelligence"	"1"
-		"AttributeIntelligenceGain"	"0"
-		"AttributeBaseAgility"		"1"
-		"AttributeAgilityGain"		"0"
-
-		"StatusHealthRegen"			"0.5"
-		"StatusManaRegen"			"0.5"
-		"StatusMana"						"100"
-		"StatusHealth"						"200"
-
-		"VisionDaytimeRange"		"1200"
-		"VisionNighttimeRange"		"1200"
-	}	
 }
