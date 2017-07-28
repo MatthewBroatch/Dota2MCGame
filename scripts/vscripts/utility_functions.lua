@@ -74,7 +74,6 @@ end
 -- Table functions
 ---------------------------------------------------------------------------
 function PrintTable( t, indent )
-	print( "PrintTable( t, indent ): " )
 	if type(t) ~= "table" then return end
 
 	for k,v in pairs( t ) do

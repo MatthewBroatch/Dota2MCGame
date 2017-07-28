@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- GameEvent:OnGameRulesStateChange
 --------------------------------------------------------------------------------
-function CRPGExample:OnGameRulesStateChange()
+function mastercrafters:OnGameRulesStateChange()
 	local nNewState = GameRules:State_Get()
 
 	if nNewState == DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP then
@@ -31,14 +31,14 @@ end
 --------------------------------------------------------------------------------
 -- GameEvent: OnNPCSpawned
 --------------------------------------------------------------------------------
-function CRPGExample:OnNPCSpawned( event )
+function mastercrafters:OnNPCSpawned( event )
 
 end
 
 --------------------------------------------------------------------------------
 -- GameEvent: OnEntityKilled
 --------------------------------------------------------------------------------
-function CRPGExample:OnEntityKilled( event )
+function mastercrafters:OnEntityKilled( event )
 	hDeadUnit = EntIndexToHScript( event.entindex_killed )
 	hAttackerUnit = EntIndexToHScript( event.entindex_attacker )
 
@@ -55,7 +55,7 @@ end
 --------------------------------------------------------------------------------
 -- GrantItemDrop
 --------------------------------------------------------------------------------
-function CRPGExample:GrantItemDrop( hDeadUnit )
+function mastercrafters:GrantItemDrop( hDeadUnit )
 	if hDeadUnit.itemTable == nil then
 		return
 	end
@@ -71,7 +71,7 @@ end
 --------------------------------------------------------------------------------
 -- PlayDeathSound
 --------------------------------------------------------------------------------
-function CRPGExample:PlayDeathSound( hDeadUnit )
+function mastercrafters:PlayDeathSound( hDeadUnit )
 	if hDeadUnit:GetUnitName() == "npc_dota_creature_zombie" or hDeadUnit:GetUnitName() == "npc_dota_creature_zombie_crawler" then
 		EmitSoundOn( "Zombie.Death", hDeadUnit )
 
@@ -87,7 +87,7 @@ end
 --------------------------------------------------------------------------------
 -- GameEvent: OnPlayerGainedLevel
 --------------------------------------------------------------------------------
-function CRPGExample:OnPlayerGainedLevel( event )
+function mastercrafters:OnPlayerGainedLevel( event )
 	local hPlayer = EntIndexToHScript( event.player )
 	local hPlayerHero = hPlayer:GetAssignedHero()
 
@@ -95,7 +95,7 @@ function CRPGExample:OnPlayerGainedLevel( event )
 	hPlayerHero:SetMana( hPlayerHero:GetMaxMana() )
 end
 
-function CRPGExample:OnItemPickedUp( event )
+function mastercrafters:OnItemPickedUp( event )
 	local hPlayerHero = EntIndexToHScript( event.HeroEntityIndex )
 	EmitGlobalSound( "ui.inv_equip_highvalue" )
 end
@@ -103,14 +103,14 @@ end
 --------------------------------------------------------------------------------
 -- GameEvent: OnSaveAccountRecord
 --------------------------------------------------------------------------------
-function CRPGExample:OnSaveAccountRecord( nPlayerID )
+function mastercrafters:OnSaveAccountRecord( nPlayerID )
 
-	print( "OnSaveAccountRecord: " .. nPlayerID );
+	print( "OnSaveAccountRecord: " .. nPlayerID )
 
 	return self._tPlayerIDToAccountRecord[nPlayerID]
 end
 
-function CRPGExample:RecordActivatedCheckpoint( nPlayerID, strCheckpoint )
+function mastercrafters:RecordActivatedCheckpoint( nPlayerID, strCheckpoint )
 	tblAccountRecord = {}
 	if self._tPlayerIDToAccountRecord[nPlayerID] then
 		tblAccountRecord = self._tPlayerIDToAccountRecord[nPlayerID]
@@ -125,8 +125,10 @@ function CRPGExample:RecordActivatedCheckpoint( nPlayerID, strCheckpoint )
 	end
 end
 
-function CRPGExample:OnLoadAccountRecord( nPlayerID )
+function mastercrafters:OnLoadAccountRecord( nPlayerID )
 	local tblAccountRecord = GameRules:GetPlayerCustomGameAccountRecord( nPlayerID )
+	self._tPlayerIDToAccountRecord[nPlayerID] = {}
+	self._tPlayerIDToAccountRecord[nPlayerID].Hello = "World"
 	if not tblAccountRecord then
 		return
 	end
@@ -143,7 +145,7 @@ end
 ---------------------------------------------------------------------------
 -- Increase Hero Stat
 ---------------------------------------------------------------------------
-function CRPGExample:IncreaseHeroStat( keys )
+function mastercrafters:IncreaseHeroStat( keys )
 	if(IsServer()) then
 		local npc = EntIndexToHScript( keys.hero )
 		print("Increase stat: ");
@@ -169,7 +171,7 @@ end
 ---------------------------------------------------------------------------
 -- Get Unit Stats
 ---------------------------------------------------------------------------
-function CRPGExample:GetUnitStats( keys )
+function mastercrafters:GetUnitStats( keys )
 	if(IsServer()) then
 		local npc = EntIndexToHScript( keys.unit )
 		local stats = {}

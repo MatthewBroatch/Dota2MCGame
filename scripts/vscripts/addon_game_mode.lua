@@ -11,7 +11,6 @@ _G.nGOOD_TEAM = 2
 _G.nBAD_TEAM = 3
 _G.nNEUTRAL_TEAM = 4
 _G.nDOTA_MAX_ABILITIES = 16
-_G.nHERO_MAX_LEVEL = 25
 
 _G.nROAMER_MAX_DIST_FROM_SPAWN = 2048
 _G.nCAMPER_MAX_DIST_FROM_SPAWN = 256
@@ -22,9 +21,9 @@ _G.nCREATURE_RESPAWN_TIME = 60
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Required .lua files, which just exist to help organize functions contained in our addon.  Make sure to call these beneath the mode's class creation.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
--- require( "utility_functions" ) -- require utility_functions first since some of the other required files may use its functions
--- require( "events" )
--- require( "rpg_example_spawning" )
+require( "utility_functions" ) -- require utility_functions first since some of the other required files may use its functions
+require( "events" )
+require( "spawning" )
 -- require( "worlditem_spawning" )
 require( 'libraries/timers' )
 require( 'libraries/notifications' )
@@ -38,13 +37,19 @@ require( 'libraries/attachments' )
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 function Precache( context )
 	GameRules.mastercrafters = mastercrafters()
-	-- GameRules.rpg_example:PrecacheSpawners( context )
+	GameRules.mastercrafters:PrecacheSpawners( context )
 	-- GameRules.rpg_example:PrecacheItemSpawners( context )
 	PrecacheUnitByNameSync("npc_dota_hero_lina", context)
+	PrecacheUnitByNameSync("npc_dota_creature_sheep", context)
 	PrecacheUnitByNameSync("npc_dota_hero_omniknight", context)
 
 	PrecacheResource( "soundfile", "soundevents/game_sounds_main.vsndevts", context )
+	PrecacheResource( "soundfile", "sounds/ambient/sheep.vsnd", context )
 	PrecacheResource( "soundfile", "soundevents/game_sounds_triggers.vsndevts", context )
+	PrecacheResource( "soundfile", "soundevents/game_sounds_heroes/game_sounds_lina.vsndevts", context )
+	PrecacheResource( "particle", 	"particles/units/heroes/hero_lina/lina_spell_dragon_slave.vpcf", context )
+	PrecacheResource( "particle", 	"particles/units/heroes/hero_tidehunter/tidehunter_gush_splash_water4c.vpcf", context )
+	
 end
 
 --------------------------------------------------------------------------------
@@ -72,7 +77,7 @@ function mastercrafters:InitGameMode()
 	
 	exp = 0;
 	for i = 1, 500 do
-		exp = exp + (i*100)
+		exp = exp + (i*50)
 		XP_PER_LEVEL_TABLE[i] = exp
 	end
 
@@ -97,9 +102,10 @@ function mastercrafters:InitGameMode()
 	GameRules:EnableCustomGameSetupAutoLaunch( false )
 
 	-- Set game mode rules
-	GameMode = GameRules:GetGameModeEntity()  
+	self._GameMode = GameRules:GetGameModeEntity()  
+	GameMode = self._GameMode
 	GameMode:SetUnseenFogOfWarEnabled( true )
-	GameMode:SetFixedRespawnTime( 4 )
+	GameMode:SetFixedRespawnTime( 0 )
 	GameMode:SetRecommendedItemsDisabled( true )
 	GameMode:SetBuybackEnabled( false )
 	GameMode:SetTopBarTeamValuesOverride ( true )
@@ -113,7 +119,7 @@ function mastercrafters:InitGameMode()
 	GameMode:SetFogOfWarDisabled( false )
 	GameMode:SetStashPurchasingDisabled( true )
 	GameMode:SetMaximumAttackSpeed( 10000 )
--- GameRules:SetCustomGameAccountRecordSaveFunction( Dynamic_Wrap( mastercrafters, "OnSaveAccountRecord" ), self )
+	-- GameRules:SetCustomGameAccountRecordSaveFunction( Dynamic_Wrap( mastercrafters, "OnSaveAccountRecord" ), self )
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 
 	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( mastercrafters, 'OnGameRulesStateChange' ), self )
@@ -132,9 +138,10 @@ function mastercrafters:InitGameMode()
 	CustomGameEventManager:RegisterListener('attach_prop', AttachProp)
 	CustomGameEventManager:RegisterListener('remove_prop', RemoveProp)
 	CustomGameEventManager:RegisterListener('create_hero', CreateHero)
+	CustomGameEventManager:RegisterListener('save_game', Save)
 	-- self._tPlayerHeroInitStatus = {}	
 	-- self._tPlayerDeservesTPAtSpawn = {}	
-	-- self._tPlayerIDToAccountRecord = {}
+	self._tPlayerIDToAccountRecord = {}
 
 
 	-- for nPlayerID = 0, DOTA_MAX_PLAYERS do
@@ -142,7 +149,7 @@ function mastercrafters:InitGameMode()
 	-- 	self._tPlayerDeservesTPAtSpawn[ nPlayerID ] = false
 	-- end
 
-	-- self:SetupSpawners()
+	self:SetupSpawners()
 	-- self:SetupItemSpawners()
 	-- self._GameMode:SetContextThink( "mastercrafters:GameThink", function() return self:GameThink() end, 0 )
 end
@@ -157,8 +164,8 @@ function mastercrafters:OnGameRulesStateChange(keys)
 				GameRules:SetTimeOfDay( 0.25 )
 				SendToServerConsole( "dota_daynightcycle_pause 1" )
 				for nPlayerID = 0, DOTA_MAX_TEAM_PLAYERS do
-					PlayerResource:SetCustomTeamAssignment( nPlayerID, 2 ) -- put each player on Radiant team
-
+					PlayerResource:SetCustomTeamAssignment( nPlayerID, DOTA_TEAM_GOODGUYS ) -- put each player on Radiant team
+					-- print( "Loading record" )
 					-- self:OnLoadAccountRecord( nPlayerID )
 				end
     elseif newState == DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP then
@@ -166,10 +173,9 @@ function mastercrafters:OnGameRulesStateChange(keys)
         -- Scores:Init() -- Start score tracking for all players
     elseif newState == DOTA_GAMERULES_STATE_PRE_GAME then
 			print("DOTA_GAMERULES_STATE_PRE_GAME")
-        -- mastercrafters:OnPreGame()  --TODO: Fix staging
     elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 			print("DOTA_GAMERULES_STATE_GAME_IN_PROGRESS")
-        -- mastercrafters:OnGameInProgress()
+			self:SpawnCreatures()
     end
 end
 
@@ -277,6 +283,7 @@ function IncreaseHeroStat( _, keys )
 		data["unit"] = keys.hero;
 		data["player"] = npc:GetPlayerOwnerID();
 		GetUnitStats(nil, data)
+		GameRules.mastercrafters:Save( data )
 	end
 end
 
@@ -294,6 +301,8 @@ function GetUnitStats( _, keys )
 			stats["str"] = npc:GetStrength()
 			stats["agi"] = npc:GetAgility()
 			stats["int"] = npc:GetIntellect()
+			stats["healthRegen"] = npc:GetHealthRegen()
+			stats["manaRegen"] = npc:GetManaRegen()
 		end
 		CustomGameEventManager:Send_ServerToPlayer( PlayerResource:GetPlayer(keys.player), "send_player_stats", stats )
 	end
@@ -379,4 +388,11 @@ function RemoveProp( _, keys )
 	if(prop ~= nil) then
 		prop:RemoveSelf() 
 	end
+end
+
+---------------------------------------------------------------------------
+-- Save and Load
+---------------------------------------------------------------------------
+function mastercrafters:Save( keys )
+	self._tPlayerIDToAccountRecord[keys.player] = GetUnitStats( nil, keys )
 end

@@ -3,7 +3,7 @@ item_tables = require( "item_tables" )
 --------------------------------------------------------------------------------
 -- PrecacheItemSpawners
 --------------------------------------------------------------------------------
-function CRPGExample:PrecacheItemSpawners( context )
+function mastercrafters:PrecacheItemSpawners( context )
 	for _, tItemTier in pairs( item_tables ) do
 		for _, sItemName in pairs( tItemTier ) do
 			PrecacheItemByNameSync( sItemName, context )
@@ -14,7 +14,7 @@ end
 --------------------------------------------------------------------------------
 -- SetupItemSpawners
 --------------------------------------------------------------------------------
-function CRPGExample:SetupItemSpawners()
+function mastercrafters:SetupItemSpawners()
 	self.tITEM_SPAWNERS_ALL = {}
 	for name, itemTable in pairs( item_tables ) do
 		table.insert( self.tITEM_SPAWNERS_ALL, { spawners = Entities:FindAllByName( name.."*" ), itemTable = itemTable } )
@@ -24,7 +24,7 @@ end
 --------------------------------------------------------------------------------
 -- SpawnItems
 --------------------------------------------------------------------------------
-function CRPGExample:SpawnItems()
+function mastercrafters:SpawnItems()
 	for _, spawnerInfo in pairs( self.tITEM_SPAWNERS_ALL ) do
 		local itemTable = spawnerInfo.itemTable
 		for _, hSpawner in pairs( spawnerInfo.spawners ) do
@@ -37,7 +37,7 @@ end
 --------------------------------------------------------------------------------
 -- SpawnItem
 --------------------------------------------------------------------------------
-function CRPGExample:SpawnItem( sItemName, hSpawner )
+function mastercrafters:SpawnItem( sItemName, hSpawner )
 	local vSpawnLoc = nil
 	while vSpawnLoc == nil do
 		vSpawnLoc = hSpawner:GetOrigin() + RandomVector( RandomFloat( 0, 64 ) )

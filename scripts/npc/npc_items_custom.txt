@@ -163,12 +163,12 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"15"
+				"damage"			"15"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_strength"		"10"
+				"str"		"10"
 			}
 		}
 
@@ -189,14 +189,14 @@
 		{
 			"modifier_item_shortsword_rusty"
 			{
-					"IsHidden"              "0"
+					"IsHidden"              "1"
 					"Passive"               "1"
 					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
 
 					"Properties"
 					{
-						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_strength"
-						"MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"		"%bonus_damage"
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%str"
+						"MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"		"%damage"
 					}
 			}
 		}
@@ -233,12 +233,12 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_regen"			"1"
+				"health_regen"			"1"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_stats"		"5"
+				"all_stats"		"5"
 			}
 		}
 
@@ -259,16 +259,16 @@
 		{
 			"item_simple_shield"
 			{
-					"IsHidden"              "0"
+					"IsHidden"              "1"
 					"Passive"               "1"
 					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
 
 					"Properties"
 					{
-						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
-						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
+						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%health_regen"
+						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%all_stats"
+						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%all_stats"
+						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%all_stats"
 					}
 			}
 		}
@@ -305,12 +305,22 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_regen"			"1"
+				"int"		"10"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_stats"		"5"
+				"mana_regen"		"1"
+			}
+			"03"
+			{
+				"var_type"					"FIELD_INTEGER"
+				"sheep_duration"		"8"
+			}
+			"04"
+			{
+				"var_type"					"FIELD_INTEGER"
+				"sheep_chance"			"20"
 			}
 		}
 
@@ -331,17 +341,48 @@
 		{
 			"modifier_item_top_hat"
 			{
-					"IsHidden"              "0"
-					"Passive"               "1"
-					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
-
-					"Properties"
+				"IsHidden"              "1"
+				"Passive"               "1"
+				"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+				
+				"OnAttackStart"
+				{
+					"Random"
 					{
-						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
-						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
-					}
+						"Chance" "%sheep_chance"
+						"OnSuccess"
+            {
+							"FireSound"
+							{
+								"EffectName"	"sounds/ambient/sheep.vsnd"
+								"Target"
+								{
+									"Center"	"CASTER"
+								}
+							}
+							"SpawnUnit"
+							{
+								"UnitName"	"npc_dota_creature_sheep"
+								"UnitCount"	"1"
+								"SpawnRadius"	"50"
+								"Duration"	"%sheep_duration"
+								"Target"
+								{
+									"Center"	"CASTER"
+								}
+
+								"GrantsGold"	"0"
+								"GrantsXP"		"0"
+							}
+            }
+					} 
+				}
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_REGEN_CONSTANT"		"%mana_regen"
+					"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%int"
+				}
 			}
 		}
 	}
@@ -376,12 +417,17 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_regen"			"1"
+				"spell_amp"			"5"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_stats"		"5"
+				"int"		"5"
+			}
+			"03"
+			{
+				"var_type"					"FIELD_INTEGER"
+				"move_speed"				"50"
 			}
 		}
 
@@ -402,17 +448,16 @@
 		{
 			"modifier_item_magic_cape"
 			{
-					"IsHidden"              "0"
-					"Passive"               "1"
-					"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"IsHidden"              "1"
+				"Passive"               "1"
+				"Attributes" 						"MODIFIER_ATTRIBUTE_MULTIPLE"
 
-					"Properties"
-					{
-						"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
-						"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_stats"
-						"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stats"
-					}
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE"			"%spell_amp"
+					"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"					"%int"
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT"   		"%move_speed"
+				}
 			}
 		}
 	}
